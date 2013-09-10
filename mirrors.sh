@@ -1,9 +1,9 @@
 #!/bin/bash
 
 
-if [ ! -f $1 ]; then
+if [ $# -eq 0 ] || [ ! -f $1 ]; then
   echo "Invalid or none configuration file provided, check sample mirrors.conf-dist file"
-  exit
+  exit 1
 fi
 source $1
 
@@ -41,12 +41,10 @@ function makeMirrors {
 
   for repoUrl in `cat mirrors.lst | sed '/^\s*#/d;/^\s*$/d'`
   do
-    echo $repoUrl
     if [[ $repoUrl != http* ]]; then
 		repoUrl=`curl -s $packagistUrl/$repoUrl | grep Canonical | sed -r -e 's|.*?href="||' -e 's|".*||'`
     fi
-    echo $repoUrl
-    echo "basename $repoUrl"
+    echo "Adding repository $repoUrl"
     repoFolder=`basename $repoUrl`
     if [[ $repoFolder != *.git ]]; then
 		repoFolder=${repoFolder}.git
@@ -64,9 +62,9 @@ function makeMirrors {
 
 if [ ! -e $satisConfigPath ];then mkdir $satisConfigPath; fi
 
-if [ $2 == 'make' ]; then
+if [ $# -ge 2 ] && [ $2 == 'make' ]; then
     cd $workTree
-    makeMirror
+    makeMirrors
 fi
 
 cd $workTree$satisPath
