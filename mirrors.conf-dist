@@ -1,0 +1,16 @@
+export PATH=$PATH:/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin/:/usr/local/sbin
+
+workTree=/mirrors/
+packagesUrl="somehost.com:$workTree"
+packagesHeader=$(cat <<END
+{
+    "name": "Some packages's mirrors",
+    "homepage": "http://somehost.com",
+    "repositories": [
+END)
+
+packagesFooter=$(cat <<END
+],
+    "require-all": true
+}
+END)
