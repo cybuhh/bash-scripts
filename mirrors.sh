@@ -14,13 +14,8 @@
 # 
 
 if [ $# -eq 0 ] || [ ! -f $1 ]; then
-<<<<<<< HEAD
     echo "Invalid or none configuration file provided, check sample mirrors.conf-dist file"
     exit 1
-=======
-  echo "Invalid or none configuration file provided, check sample mirrors.conf-dist file"
-  exit 1
->>>>>>> 84362c4bdc5c33bfe5f670ce7cbd7bce2aae750b
 fi
 source $1
 
@@ -56,7 +51,6 @@ function refreshMirrors {
 function makeMirrors {
     echo -e $packagesHeader > $satisConfigFile
 
-<<<<<<< HEAD
     for repoUrl in `cat mirrors.lst | sed '/^\s*#/d;/^\s*$/d'`
     do
         if [[ $repoUrl != http* ]]; then
@@ -74,22 +68,6 @@ function makeMirrors {
             echo -e "Clonning $repoUrl"
             `git clone --bare $repoUrl`
         fi
-=======
-  for repoUrl in `cat mirrors.lst | sed '/^\s*#/d;/^\s*$/d'`
-  do
-    if [[ $repoUrl != http* ]]; then
-		repoUrl=`curl -s $packagistUrl/$repoUrl | grep Canonical | sed -r -e 's|.*?href="||' -e 's|".*||'`
-    fi
-    echo "Adding repository $repoUrl"
-    repoFolder=`basename $repoUrl`
-    if [[ $repoFolder != *.git ]]; then
-		repoFolder=${repoFolder}.git
-    fi
-    if [ ! -d $repoFolder ]; then
-      echo -e "Clonning $repoUrl"
-      `git clone --bare $repoUrl`
-    fi
->>>>>>> 84362c4bdc5c33bfe5f670ce7cbd7bce2aae750b
 
         echo -e "{ \"type\": \"vcs\", \"url\": \"$packagesUrl$repoFolder\" }," >> $satisConfigFile
     done
