@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script needs packages list file 'mirrors.lst' in $workTree
+# This script needs packages list file 'mirror-pkgs.lst' in $workTree
 # mirrors list should caintain full url to git repo
 # or module name (with vendor prefix).
 # If the moudle is registered in packagis.org the repoository url
@@ -51,7 +51,7 @@ function refreshMirrors {
 function makeMirrors {
     echo -e $packagesHeader > $satisConfigFile
 
-    for repoUrl in `cat mirrors.lst | sed '/^\s*#/d;/^\s*$/d'`
+    for repoUrl in `cat mirror-pkgs.lst | sed '/^\s*#/d;/^\s*$/d'`
     do
         if [[ $repoUrl != http* ]]; then
             repoUrl=`curl -s $packagistUrl/$repoUrl | grep Canonical | sed -r -e 's|.*?href="||' -e 's|".*||'`
