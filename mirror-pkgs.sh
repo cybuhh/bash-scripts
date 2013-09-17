@@ -98,6 +98,8 @@ if [ $# -ge 2 ] && [ $2 == 'make' ]; then
     makeMirrors $3
 fi
 
+refreshMirrors
+
 cd $workTree$satisPath
 makeComposer
 makeSatis
