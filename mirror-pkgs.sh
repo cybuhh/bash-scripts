@@ -63,8 +63,8 @@ function refreshMirrors {
 function makeMirrors {
     echo -e $packagesHeader > $satisConfigFile
 
-    if [ $# -gt 2 ] && [ -n "$3" ]; then
-        packagesListFile=$3
+    if [ $# -gt 0 ] && [ -n "$1" ]; then
+        packagesListFile=$1
     fi
 
     for repoUrl in `cat $packagesListFile | sed '/^\s*#/d;/^\s*$/d'`
@@ -95,7 +95,7 @@ if [ ! -e $satisConfigPath ];then mkdir $satisConfigPath; fi
 
 if [ $# -ge 2 ] && [ $2 == 'make' ]; then
     cd $workTree
-    makeMirrors
+    makeMirrors $3
 fi
 
 cd $workTree$satisPath
