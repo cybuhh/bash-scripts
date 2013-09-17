@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Usage: ./mirror-pkgs.sh configurationFile [make] [packageListFile]
+#
+# E.g.: ./mirror-pkgs.sh mirror-pkgs.conf
+#       ./mirror-pkgs.sh mirror-pkgs.conf make pakcagesList.lst
+#
+# If no packages list file was provided, scipt will look for file
+# mirror-pkgs.lst in $workTree
+# 
 # This script needs packages list file 'mirror-pkgs.lst' in $workTree
 # mirrors list should caintain full url to git repo
 # or module name (with vendor prefix).
@@ -14,7 +22,10 @@
 # 
 
 if [ $# -eq 0 ] || [ ! -f $1 ]; then
-    echo "Invalid or none configuration file provided, check sample mirrors.conf-dist file"
+    echo -e "Invalid or none configuration file provided, check sample mirrors.conf-dist file\n"
+    echo -e "Usage: $0 configurationFile [make] [packageListFile]\n"
+    echo -e "E.g.: $0 mirror-pkgs.conf"
+    echo -e "      $0 mirror-pkgs.conf make packagesList.lst\n"
     exit 1
 fi
 source $1
@@ -23,6 +34,7 @@ packagistUrl='https://packagist.org/packages'
 satisPath=public
 satisConfigPath=$workTree$satisPath
 satisConfigFile=$satisConfigPath'/satis.json'
+packagesListFile='mirror-pkgs.lst'
 
 function makeComposer {
     composerUrl='https://getcomposer.org/installer'
@@ -51,7 +63,11 @@ function refreshMirrors {
 function makeMirrors {
     echo -e $packagesHeader > $satisConfigFile
 
-    for repoUrl in `cat mirror-pkgs.lst | sed '/^\s*#/d;/^\s*$/d'`
+    if [ $# -gt 2 ] && [ -n "$3" ]; then
+        packagesListFile=$3
+    fi
+
+    for repoUrl in `cat $packagesListFile | sed '/^\s*#/d;/^\s*$/d'`
     do
         if [[ $repoUrl != http* ]]; then
             repoUrl=`curl -s $packagistUrl/$repoUrl | grep Canonical | sed -r -e 's|.*?href="||' -e 's|".*||'`
