@@ -70,19 +70,20 @@ function makeMirrors {
     for repoUrl in `cat $packagesListFile | sed '/^\s*#/d;/^\s*$/d'`
     do
         if [[ $repoUrl != http* ]]; then
-            repoUrl=`curl -s $packagistUrl/$repoUrl | grep Canonical | sed -r -e 's|.*?href="||' -e 's|".*||'`
+            repoUrl=`curl -s $packagistUrl/$repoUrl | grep Canonical | sed -r -e 's|.*?href="||' -e 's|".*||' | -e 's#http://github.com#https://github.com#'`
         fi
-
         echo "Adding repository $repoUrl"
-        repoFolder=`basename $repoUrl`
+        repoFolder=`echo $repoUrl | sed -r "s#^http(.+?)//[a-z.]+?/##"`
 
         if [[ $repoFolder != *.git ]]; then
             repoFolder=${repoFolder}.git
         fi
 
-        if [ ! -d $repoFolder ]; then
+        if [ ! -d $workTree/$repoFolder ]; then
+            mkdir -p $workTree/$repoFolder
+            cd $workTree/$repoFolder
             echo -e "Clonning $repoUrl"
-            `git clone --bare $repoUrl`
+            `git clone --bare $repoUrl .`
         fi
 
         echo -e "{ \"type\": \"vcs\", \"url\": \"$packagesUrl$repoFolder\" }," >> $satisConfigFile
