@@ -57,7 +57,7 @@ function makeSatis {
 }
 
 function refreshMirrors {
-    find . -mindepth 2 -maxdepth 2 -type d -name "*.git" \( ! -iname ".*" \) -exec git -p --git-dir="{}" fetch \;
+    find . -mindepth 2 -maxdepth 2 -type d -name "*.git" \( ! -iname ".*" \) -exec git --git-dir="{}" fetch --all \;
 }
 
 function makeMirrors {
@@ -84,7 +84,7 @@ function makeMirrors {
             mkdir -p $workTree/$repoFolder
             cd $workTree/$repoFolder
             echo -e "Clonning $repoUrl"
-            `git clone --bare $repoUrl .`
+            `git clone --mirror $repoUrl .`
         fi
 
         echo -e "{ \"type\": \"vcs\", \"url\": \"$packagesUrl$repoFolder\" }," >> $satisConfigFile
