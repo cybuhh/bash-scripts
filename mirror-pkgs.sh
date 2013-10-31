@@ -57,7 +57,7 @@ function makeSatis {
 }
 
 function refreshMirrors {
-    find . -mindepth 1 -maxdepth 1 -type d -name "*.git" \( ! -iname ".*" \) -exec git -p --git-dir="{}" fetch \;
+    find . -mindepth 2 -maxdepth 2 -type d -name "*.git" \( ! -iname ".*" \) -exec git -p --git-dir="{}" fetch \;
 }
 
 function makeMirrors {
@@ -70,8 +70,9 @@ function makeMirrors {
     for repoUrl in `cat $packagesListFile | sed '/^\s*#/d;/^\s*$/d'`
     do
         if [[ $repoUrl != http* ]]; then
-            repoUrl=`curl -s $packagistUrl/$repoUrl | grep Canonical | sed -r -e 's|.*?href="||' -e 's|".*||' | -e 's#http://github.com#https://github.com#'`
+            repoUrl=`curl -s $packagistUrl/$repoUrl | grep Canonical | sed -r -e 's|.*?href="||' -e 's|".*||' -e 's#http://github.com#https://github.com#'`
         fi
+
         echo "Adding repository $repoUrl"
         repoFolder=`echo $repoUrl | sed -r "s#^http(.+?)//[a-z.]+?/##"`
 
