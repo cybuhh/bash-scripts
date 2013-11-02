@@ -52,7 +52,6 @@ function makeSatis {
     satisBin='satis/bin/satis'
     if [ ! -e $satisBin ]; then
       echo "php $composerBin create-project composer/satis --stability=dev --keep-vcs"
-      exit
     fi
     echo "php $satisBin build $satisConfigFile ."
 }
@@ -101,8 +100,8 @@ if [ $# -ge 2 ] && [ $2 == 'make' ]; then
     makeMirrors $3
 fi
 
-#refreshMirrors
+refreshMirrors
 
-# cd $workTree$satisPath
-# makeComposer
+cd $workTree$satisPath
+makeComposer
 makeSatis
