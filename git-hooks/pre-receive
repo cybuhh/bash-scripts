@@ -43,5 +43,3 @@ if [ ! -z "$errors_list" ]; then
 	echo -e $errors_list
 	exit 1
 fi
-
-exit 1
