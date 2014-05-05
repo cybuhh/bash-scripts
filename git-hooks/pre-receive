@@ -1,0 +1,47 @@
+#!/bin/bash
+
+temp_dir=`mktemp -d -t git-pre-receive-hook`
+
+files_pattern='.(php|phtml)$'
+blacklisted_functions="exit\(|dir\(|var_dump\("
+
+errors_list='';
+
+while read oldrev newrev refname; do
+	files=`git diff --diff-filter=AM --name-only ${oldrev} ${newrev} | grep -E $files_pattern`
+	for file in $files; do
+		changes=`git diff ${oldrev} ${newrev} -- $1 | \
+				 grep -E '^\+[^\+]' | \
+				 sed -e 's/^+//'`;
+
+		# check blacklisted functions
+		blacklisted_result=`echo "$changes" | grep -v -E '#|//' | grep -E "$blacklisted_functions"`
+		if [ ! -z  "$blacklisted_result" ]; then
+			errors_list+="Matching found in $file:\n$blacklisted_result"
+		fi
+		
+		# check end-of-lines
+		eol_result=`echo "$changes" | grep '\r'`
+		if [ ! -z  "$eol_result" ]; then
+			errors_list+="Invalid end-of-line in file: $file."
+		fi
+
+		if [[ -z "$blacklisted_result" && -z "$eol_result" ]]; then
+			`git show ${newrev}:${file} > "$temp_dir/$file"`
+			lintr_result=`php -l $temp_dir/$file`
+			if [ $? != 0 ]; then
+				errors_list+="Found syntax errors in file: $file."
+			fi
+		fi
+	done
+done
+
+`rm -rf "$temp_dir"`
+
+if [ ! -z "$errors_list" ]; then
+	echo -e "You've left errors in one or more of your files! Aborting commit...\n"
+	echo -e $errors_list
+	exit 1
+fi
+
+exit 1
