@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ `uname` != 'Darwin' ]; then
+	echo 'Sorry this script is for OSX only'
+	exit 1
+fi
+
 mount_base=/Volumes
 
 # 0 yes
